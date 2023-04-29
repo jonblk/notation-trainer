@@ -1,59 +1,76 @@
-import { getKeyIndex, getRandomNote, audioWrong, audioCorrect } from "./../utilities";
-import { useState, useRef } from 'react';
+import { getKeyIndex, getNoteName, getRandomNote, audioWrong, audioCorrect } from "./../utilities";
+import { useState, useRef, useEffect } from 'react';
 import Piano from './Piano';
 import MusicScore from './MusicScore';
+import { CSSTransition } from 'react-transition-group';
+
+const TREBLE_CLEF  = 'treble';
+const BASS_CLEF    = 'bass';
+const OCTAVE_RANGE = { treble: [4,5], bass: [2,3] };
 
 export default function NoteReadingTrainer() {
-  // treble, or bass
-  const [clef, setClef] = useState('treble');
-
-  const octaveRange = (clef) => clef === 'treble' ? [4,5] : [2,3];
-
-  // the piano keys that are currently in the on state 
-  const [onKeys, setOnKeys] = useState({});
-
-  // the current note that the user must correctly identify
-  const [currentNote, setCurrentNote] = useState(getRandomNote(octaveRange(clef), null));
+  const [clef, setClef] = useState(TREBLE_CLEF);
+  const [onKeys, setOnKeys] = useState({}); // piano keys in the ON state
+  const [noteToPlay, setNoteToPlay] = useState(getRandomNote(OCTAVE_RANGE[clef], null)); 
+  const [onNote, setOnNote] = useState(null); // last note to be in ON state
+  const [isEnter, setIsEnter] = useState(true); // for animation
+  const [isCorrect, setIsCorrect] = useState(null); 
 
   const score = useRef(0);
 
-  // Callback for note on/off events 
-  // keyIndex 0->87
-  const onToggleKey = (keyIndex, isOn) => {
-    if (isOn) {
-      // correct note 
-      if (getKeyIndex(currentNote) === keyIndex) {
-        let next_clef = Math.random() > 0.5 ? 'treble' : 'bass';
-        let next_note = getRandomNote(octaveRange(next_clef), currentNote);
+  const nextClef = () => Math.random() > 0.5 ? TREBLE_CLEF : BASS_CLEF;
 
-        setCurrentNote(next_note);
-        setClef(next_clef);
-
-        score.current.classList.remove("shake")
-        audioCorrect.currentTime = 0;
-        audioCorrect.play();
-
-      // wrong note
-      } else {
-        audioWrong.currentTime = 0;
-        audioWrong.play();
-      }
-    } 
-    
-    setOnKeys((state, _props) => ({
-      ...state, 
-      ...{[keyIndex]: isOn}
-    }));
+  const onNoteOn = index => {
+    const is_correct = index === getKeyIndex(noteToPlay);
+    setOnKeys((state, _props) => ({...state, ...{[index]: true}}));
+    setIsCorrect(is_correct);
+    setIsEnter(true);
+    setOnNote(getNoteName(index, /[b]/.test(noteToPlay)));
+    if(is_correct) {
+      audioCorrect.currentTime = 0;
+      audioCorrect.play(); 
+    } else {
+      //audioWrong.currentTime = 0;
+      //audioWrong.play();
+    }
   }
 
-  //const isConnected = midiInputs.length === 0;
+  const onNoteOff = index => {
+    const is_correct = index === getKeyIndex(noteToPlay);
+    setOnKeys((state, _props) => ({...state, ...{[index]: false}}));
+    setIsEnter(false);  
+    if (is_correct) {
+      let next_clef = nextClef();
+      let next_note = getRandomNote(OCTAVE_RANGE[next_clef], noteToPlay);
+      setNoteToPlay(next_note);
+      setClef(next_clef);
+    }
+  }
+
+  const flexRow = {
+    display: 'flex', 
+    flexDirection: 'row', 
+    width: '100%', 
+    height: '70vh', 
+    alignItems: 'center', 
+    justifyContent: 'center'
+  }
 
   return(
     <div>
-      <div ref={score}>
-        <MusicScore clef={clef} note={currentNote} />
+      <div style={flexRow}>
+        <CSSTransition in={isEnter} timeout={isCorrect ? 2000 : 1000} appear={true} classNames={"fade"}>
+          <p className={isCorrect ? 'success' : ''} style={{color: isCorrect ? `hsl(180 100% 50%)` : 'inherit', width: '0px', paddingTop: '60px', fontSize: '55px', fontWeight: '700'}}>
+            {onNote}
+          </p>
+        </CSSTransition>
+
+        <div ref={score}>
+          <MusicScore clef={clef} note={noteToPlay} />
+        </div>
       </div>
-      <Piano onKeys={onKeys} onTogglePianoKey={onToggleKey} currentNote={currentNote} />
+
+      <Piano onKeys={onKeys} onNoteOff={onNoteOff} onNoteOn={onNoteOn} currentNote={noteToPlay} />
     </div>
   );
 }

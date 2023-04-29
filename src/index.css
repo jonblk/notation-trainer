@@ -17,3 +17,32 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.fade-exit {
+  opacity: 1;
+  margin-bottom: 55px;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transition: all 900ms ease-out;
+}
+
+.fade-exit-done {
+  opacity: 0;
+}
+
+.fade-exit.success {
+  opacity: 1;
+}
+
+.fade-exit-active.success {
+  margin-bottom: 90px;
+  opacity: 0;
+  transition: all 2000ms ease-out;
+}
+
+.fade-exit-done.success {
+  margin-bottom: 90px;
+  opacity: 0;
+}

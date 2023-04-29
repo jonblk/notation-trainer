@@ -4,9 +4,8 @@ describe('getRandomNote()', () => {
   it('returns a valid random note that does not equal previous note', () => {
     const previousNote = 'C#/1';
     const octaveRange = [2,2];
-    const randomNote = getRandomNote(octaveRange, previousNote); 
-    const result = randomNote !== previousNote;
-    [...Array(1000)].forEach(() => expect(result).toBe(true));
+    const randomNote = () => getRandomNote(octaveRange, previousNote); 
+    [...Array(1000)].forEach(() => expect(randomNote() !== previousNote).toBe(true));
   });
 
   it('returns a valid random note', () => {

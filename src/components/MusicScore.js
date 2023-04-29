@@ -3,15 +3,6 @@ import { useEffect, useRef } from 'react';
 
 const DEFAULT_COLOR = '#1d373d';
 
-const style = {
-  display: 'flex', 
-  flexDirection: 'column', 
-  width: '100%', 
-  height: '70vh', 
-  alignItems: 'center', 
-  justifyContent: 'center'
-}
-
 const drawScore = (ref, currentNote, clef) => {
   const renderer = new Renderer(ref, Renderer.Backends.SVG);
 
@@ -70,11 +61,7 @@ const MusicScore = ({note, clef}) => {
     });
   }, [note, clef]);
 
-  return(
-    <div style={style}>
-      <div ref={score}  id="score"></div>
-    </div>
-  );
+  return(<div ref={score}  id="score"></div>);
 }
 
 export default MusicScore;

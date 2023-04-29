@@ -1,5 +1,5 @@
 export const audioCorrect = new Audio('/correct.wav');
-export const audioWrong = new Audio('/wrong.wav');
+export const audioWrong = new Audio('/wrong.mp3');
 
 export const OCTAVE_ERROR = 'Invalid Octave Value';
 export const PITCH_ERROR  = 'Invalid Pitch Value';
@@ -18,6 +18,18 @@ export const isValidNote = (note) => {
   const regex = /^[A-G][#b]?\/\d$/i 
   return regex.test(note);
 };
+
+export const getNoteName = (number, isFlat = false) => {
+   let notes;
+
+   if (isFlat) {
+     notes = ["A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab"]
+   } else {
+     notes = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
+   }
+
+   return notes[number % 12];
+}
 
 // input string: (F#/3, Fb/3, F/3 etc...) 
 // output integer: 0-87 key index
@@ -56,7 +68,7 @@ export const getRandomNote = (octave_range, current_note=null) => {
     const rnd         = (min,max) => Math.floor(Math.random() * (max - min + 1)) + min;
     const pitches     = ['A','B','C','D','E','F','G'];
     const octaves     = octave_range;
-    const accidentals = ['', '', 'b', '#'] 
+    const accidentals = ['', 'b', '#'] 
     const pitch       = pitches[rnd(0, pitches.length-1)];
     const octave      = octaves[rnd(0, octaves.length-1)];
     let accidental    = accidentals[rnd(0, Math.random() * accidentals.length-1)];
