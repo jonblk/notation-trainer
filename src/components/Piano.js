@@ -73,7 +73,7 @@ const Piano = ({onKeys, onNoteOn, onNoteOff, currentNote, octaveRange}) => {
     // add white key
     whiteKeys.push(
       <MemoizedPianoKey 
-        isActive={(octave >= octaveRange[0]) && (octave <= octaveRange[1])}
+        isActive={(octave >= octaveRange[0]) && (octave <= octaveRange[1]+1)}
         isBlack={false}
         isPressed={onKeys[keyIndex]} 
         onNoteOn={() => onNoteOn(keyIndexCopy)} 
