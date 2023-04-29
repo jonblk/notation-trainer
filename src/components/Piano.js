@@ -1,8 +1,8 @@
 import { useState, memo } from 'react';
 
-const PianoKey = ({isBlack, index, xOffset, isPressed, onNoteOff, onNoteOn}) => {
+const PianoKey = ({isActive, isBlack, index, xOffset, isPressed, onNoteOff, onNoteOn}) => {
   const [isHovered, setIsHovered] = useState(false);
-  let color = isBlack ? '#1d373d' : '#abc4c4';
+  let color = isBlack ? '#1d373d' : 'inherit';
   let style= {};
 
   if (isHovered) {
@@ -16,18 +16,23 @@ const PianoKey = ({isBlack, index, xOffset, isPressed, onNoteOff, onNoteOn}) => 
   if (isBlack) {
     // black key style - use absolute positioning 
     style = { 
+      zIndex: '3',
       position: 'absolute', 
       left:     `${xOffset*100}%`,  
       width:    `${1/52 * 0.5 * 100}%`, 
       height:     '50%', 
-      background: color 
+      background: color, 
+      opacity: isHovered || isPressed ? 1 : isActive ? '1' : '0.3' 
     };
   } else {
     // white key style - use flexbox
     style = {
       width:      `inherit`, 
       height:     '100%', 
-      background: color
+      background: color,
+      display: 'flex',
+      alignItems: 'end', 
+      justifyContent: 'center',
     };
   }
 
@@ -39,31 +44,36 @@ const PianoKey = ({isBlack, index, xOffset, isPressed, onNoteOff, onNoteOn}) => 
       onMouseDown ={() => onNoteOn()} 
       onMouseUp   ={() => onNoteOff()} 
       style={style}>
+      { index === 39 ? 'C4' : '' }
     </div>
   );
 }
 
 const propsEquality = (prev, next) =>  
-  prev.isPressed  === next.isPressed && 
+  prev.isPressed === next.isPressed && 
   prev.currentNote === next.currentNote 
 
 const MemoizedPianoKey = memo(PianoKey, propsEquality);
 
-const Piano = ({onKeys, onNoteOn, onNoteOff, currentNote}) => {
+const Piano = ({onKeys, onNoteOn, onNoteOff, currentNote, octaveRange}) => {
   const whiteKeyCount = 52; 
   let whiteKeys = [];
   let blackKeys = [];
   let whiteKeyIndex = 0; 
   let keyIndex = 0; 
+  let octave = 0;
   const pitch = ['A','B','C','D','E','F','G'];
 
   while(whiteKeyIndex < whiteKeyCount) {
     let currentPitch = pitch[whiteKeyIndex % 7];
     let keyIndexCopy = keyIndex;
+    if (currentPitch === 'C')
+      octave++;
 
     // add white key
     whiteKeys.push(
       <MemoizedPianoKey 
+        isActive={(octave >= octaveRange[0]) && (octave <= octaveRange[1])}
         isBlack={false}
         isPressed={onKeys[keyIndex]} 
         onNoteOn={() => onNoteOn(keyIndexCopy)} 
@@ -83,6 +93,7 @@ const Piano = ({onKeys, onNoteOn, onNoteOff, currentNote}) => {
 
       blackKeys.push(
         <MemoizedPianoKey 
+          isActive={(octave >= octaveRange[0]) && (octave <= octaveRange[1])}
           isBlack={true}
           isPressed={onKeys[keyIndex]} 
           xOffset={(whiteKeyIndex/whiteKeyCount) + ((1/52)*0.3) - 1/52*0.5} 

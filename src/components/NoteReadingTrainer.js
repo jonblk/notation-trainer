@@ -70,7 +70,7 @@ export default function NoteReadingTrainer() {
         </div>
       </div>
 
-      <Piano onKeys={onKeys} onNoteOff={onNoteOff} onNoteOn={onNoteOn} currentNote={noteToPlay} />
+      <Piano octaveRange={[OCTAVE_RANGE['bass'][0], OCTAVE_RANGE['treble'][1]]} onKeys={onKeys} onNoteOff={onNoteOff} onNoteOn={onNoteOn} currentNote={noteToPlay} />
     </div>
   );
 }
