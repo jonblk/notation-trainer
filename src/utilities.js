@@ -1,5 +1,5 @@
-export const audioCorrect = new Audio('/correct.wav');
-export const audioWrong = new Audio('/wrong.mp3');
+export const audioCorrect = new Audio('./correct.wav');
+export const audioWrong = new Audio('./wrong.mp3');
 
 export const OCTAVE_ERROR = 'Invalid Octave Value';
 export const PITCH_ERROR  = 'Invalid Pitch Value';
