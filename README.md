@@ -4,6 +4,6 @@ A simple reactjs app to practice note reading. Click on the piano to pick the no
 
 Uses [vexflow](https://github.com/0xfe/vexflow) for notation rendering. 
 
-[Try it](https://protonr.github.io/notation-trainer)
+[Try it](https://jonblk.github.io/notation-trainer)
  
-![screenshot](https://github.com/protonr/protonr.github.io/blob/master/note.jpg)
+![screenshot](https://github.com/jonblk/jonblk.github.io/blob/master/note.jpg)
